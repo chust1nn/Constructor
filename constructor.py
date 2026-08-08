@@ -201,7 +201,6 @@ def agregar_palabra():
 # --- BARRA LATERAL (HISTORIAL LOCAL) ---
 with st.sidebar:
     st.markdown("### HISTORIAL LOCAL")
-    st.markdown("<p style='font-size: 0.85rem; color: #888;'>Almacenado mediante cookies en tu dispositivo.</p>", unsafe_allow_html=True)
     
     if st.session_state.historial:
         # Usamos un símbolo ASCII en lugar de un nombre que pueda confundir a Streamlit
