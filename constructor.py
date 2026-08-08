@@ -127,6 +127,16 @@ st.markdown("""
         border-color: #ffd166 !important;
         box-shadow: 4px 4px 0px #ffd166 !important;
     }
+    /* Ocultar iconos mal renderizados en la cabecera */
+    [data-testid="stSidebarCollapseButton"] {
+        display: none !important;
+    }
+    
+    /* Si el icono aparece como texto en la parte superior, lo ocultamos */
+    header {
+        visibility: hidden !important;
+        height: 0 !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
