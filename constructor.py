@@ -1,6 +1,10 @@
 import streamlit as st
-from google import genai
 import time
+from google import genai
+from streamlit_cookies_controller import CookieController
+
+# --- CONFIGURACIÓN DE COOKIES ---
+controller = CookieController()
 
 # --- CONFIGURACIÓN DE LA PÁGINA (WIDE MODE + LOGO PERSONALIZADO) ---
 st.set_page_config(
@@ -146,7 +150,7 @@ st.markdown("""
 # --- CONFIGURACIÓN DE LA IA ---
 client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
 
-# --- CONTROL DE ESTADO ---
+# --- CONTROL DE ESTADO E HISTORIAL POR COOKIES ---
 if "paso" not in st.session_state:
     st.session_state.paso = 1  
 if "tema" not in st.session_state:
@@ -157,6 +161,14 @@ if "definicion_generada" not in st.session_state:
     st.session_state.definicion_generada = ""
 if "animacion_vista" not in st.session_state:
     st.session_state.animacion_vista = False
+
+# Cargar historial desde las cookies del navegador
+historial_cookie = controller.get('cybr_historial')
+if 'historial' not in st.session_state:
+    if historial_cookie:
+        st.session_state.historial = historial_cookie.split("|||") if isinstance(historial_cookie, str) else []
+    else:
+        st.session_state.historial = []
 
 def avanzar_paso_1():
     tema_val = st.session_state.input_tema.strip()
@@ -171,6 +183,23 @@ def agregar_palabra():
     if palabra and palabra not in st.session_state.palabras:
         st.session_state.palabras.append(palabra)
     st.session_state.input_palabra = ""
+
+# --- BARRA LATERAL (HISTORIAL LOCAL) ---
+with st.sidebar:
+    st.markdown("### 🕒 HISTORIAL LOCAL")
+    st.markdown("<p style='font-size: 0.85rem; color: #888;'>Almacenado mediante cookies en tu dispositivo.</p>", unsafe_allow_html=True)
+    
+    if st.session_state.historial:
+        if st.button("🗑️ BORRAR HISTORIAL"):
+            st.session_state.historial = []
+            controller.set('cybr_historial', '')
+            st.rerun()
+            
+        st.markdown("---")
+        for item in reversed(st.session_state.historial):
+            st.markdown(f"<div style='background: #16161e; border: 1px solid #7209b7; padding: 12px; border-radius: 0px; margin-bottom: 10px; font-size: 0.85rem; color: #f0f0f5;'>{item}</div>", unsafe_allow_html=True)
+    else:
+        st.info("Sin registros previos en este navegador.")
 
 # --- DECORACIONES LATERALES ---
 st.markdown("<div class='side-decor-left'>// SYS.STATUS: ACTIVE_NODE // 2026</div>", unsafe_allow_html=True)
@@ -274,6 +303,17 @@ elif st.session_state.paso == 3:
                     contents=prompt_ia,
                 )
                 st.session_state.definicion_generada = response.text
+                
+                # --- GUARDAR AUTOMÁTICAMENTE EN COOKIES ---
+                item_historial = f"<b>{st.session_state.tema}</b>: {st.session_state.definicion_generada}"
+                if item_historial not in st.session_state.historial:
+                    st.session_state.historial.append(item_historial)
+                    # Mantener solo las últimas 6 definiciones guardadas
+                    if len(st.session_state.historial) > 6:
+                        st.session_state.historial.pop(0)
+                    # Guardar en cookie por 1 año
+                    controller.set('cybr_historial', "|||".join(st.session_state.historial), max_age=31536000)
+
             except Exception as e:
                 if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
                     st.session_state.definicion_generada = "Límite de cuota alcanzado temporalmente. Reintente en unos segundos."
