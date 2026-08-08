@@ -132,10 +132,14 @@ st.markdown("""
         display: none !important;
     }
     
-    /* Si el icono aparece como texto en la parte superior, lo ocultamos */
-    header {
-        visibility: hidden !important;
-        height: 0 !important;
+/* Ocultar específicamente el texto de los iconos que no cargan */
+    .stApp header p {
+        display: none !important;
+    }
+    
+    /* Ocultar el contenedor del botón de colapsar sidebar si es el causante */
+    button[kind="header"] {
+        display: none !important;
     }
     </style>
 """, unsafe_allow_html=True)
