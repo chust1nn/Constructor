@@ -141,6 +141,20 @@ st.markdown("""
     button[kind="header"] {
         display: none !important;
     }
+    /* Ocultar el icono de ancla de los títulos */
+    span[data-baseweb="tag"] {
+        display: none !important;
+    }
+    
+    /* Ocultar el icono de enlace que aparece al pasar el ratón */
+    a[aria-hidden="true"] {
+        display: none !important;
+    }
+    
+    /* Asegurar que el título no tenga margen extra por el icono */
+    h1, h2, h3, h4, h5, h6 {
+        padding-left: 0px !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
