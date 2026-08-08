@@ -186,11 +186,12 @@ def agregar_palabra():
 
 # --- BARRA LATERAL (HISTORIAL LOCAL) ---
 with st.sidebar:
-    st.markdown("### 🕒 HISTORIAL LOCAL")
+    st.markdown("### HISTORIAL LOCAL")
     st.markdown("<p style='font-size: 0.85rem; color: #888;'>Almacenado mediante cookies en tu dispositivo.</p>", unsafe_allow_html=True)
     
     if st.session_state.historial:
-        if st.button("🗑️ BORRAR HISTORIAL"):
+        # Usamos un símbolo ASCII en lugar de un nombre que pueda confundir a Streamlit
+        if st.button("CLEAR_LOG [ ✕ ]"): 
             st.session_state.historial = []
             controller.set('cybr_historial', '')
             st.rerun()
