@@ -209,6 +209,10 @@ def agregar_palabra():
         st.session_state.palabras.append(palabra)
     st.session_state.input_palabra = ""
 
+def borrar_ultima_palabra():
+    if st.session_state.palabras:
+        st.session_state.palabras.pop()
+
 # --- BARRA LATERAL (HISTORIAL LOCAL) ---
 with st.sidebar:
     st.markdown("### HISTORIAL LOCAL")
@@ -282,9 +286,13 @@ elif st.session_state.paso == 2:
         st.markdown(html_tags, unsafe_allow_html=True)
         st.write("")
         
-        if st.button("LIMPIAR BUFFER"):
-            st.session_state.palabras = []
-            st.rerun()
+        col_borrar, col_limpiar = st.columns(2)
+        with col_borrar:
+            st.button("BORRAR ÚLTIMA", on_click=borrar_ultima_palabra)
+        with col_limpiar:
+            if st.button("LIMPIAR BUFFER"):
+                st.session_state.palabras = []
+                st.rerun()
     
     st.divider()
     
